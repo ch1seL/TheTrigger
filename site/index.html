@@ -3,18 +3,20 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Стартовый сигнал гонок</title>
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="theme-color" content="#0a0f1e">
+    <title>Старт гонки</title>
     <style>
         :root {
-            --bg: #0f0f1a;
-            --panel-bg: #13132b;
+            --bg: #0a0f1e;
+            --panel-bg: #111633;
             --text: #e0e0e0;
             --text-secondary: #9a9ab8;
             --accent: #e94560;
             --accent-hover: #ff6b81;
             --input-bg: #1a1a2e;
             --input-border: #2a2a4a;
-            --card-bg: #0a0f2c;
             --shadow: 0 6px 24px rgba(0,0,0,0.6);
             --red-on: #ff1a1a;
             --red-glow: #ff0000;
@@ -24,11 +26,7 @@
             --green-glow: #00ff00;
         }
 
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
 
         body {
             font-family: 'Segoe UI', 'Roboto', 'Helvetica Neue', Arial, sans-serif;
@@ -42,7 +40,29 @@
             user-select: none;
             -webkit-tap-highlight-color: transparent;
             touch-action: manipulation;
+            position: relative;
         }
+
+        .settings-btn {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: #1a1a2e;
+            border: 2px solid #2a2a4a;
+            color: #c0c0d0;
+            font-size: 1.8rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            z-index: 100;
+            transition: all 0.3s;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+        }
+        .settings-btn:hover { background: #2a2a44; color: #fff; }
 
         .container {
             display: flex;
@@ -50,151 +70,112 @@
             align-items: center;
             gap: 20px;
             width: 100%;
-            max-width: 420px;
+            max-width: 500px;
+            padding-top: 40px;
         }
 
-        /* Заголовок */
         .title {
-            font-size: 1.6rem;
-            font-weight: 700;
+            font-size: 1.8rem;
+            font-weight: 800;
             color: #ffffff;
             text-align: center;
             letter-spacing: 2px;
             text-transform: uppercase;
-            text-shadow: 0 0 15px rgba(233,68,96,0.4);
-            line-height: 1.3;
+            text-shadow: 0 0 15px rgba(233,68,96,0.5);
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
         .title .icon {
+            font-size: 2.2rem;
+            animation: hover-drone 2s ease-in-out infinite;
             display: inline-block;
-            font-size: 1.8rem;
-            animation: pulse-icon 1.8s ease-in-out infinite;
         }
-        @keyframes pulse-icon {
-            0%,100% { transform: scale(1); }
-            50% { transform: scale(1.2); }
+        @keyframes hover-drone {
+            0%,100% { transform: translateY(0) rotate(0deg); }
+            50% { transform: translateY(-5px) rotate(-2deg); }
         }
 
-        /* Светофор (уменьшенный масштаб) */
-        .traffic-light {
-            background: linear-gradient(180deg, #19192e 0%, #12122a 100%);
-            border: 3px solid #2e2e4a;
-            border-radius: 22px;
-            padding: 16px 14px;
+        .f1-lights {
             display: flex;
-            flex-direction: column;
             align-items: center;
-            gap: 10px;
-            box-shadow: var(--shadow), inset 0 1px 0 rgba(255,255,255,0.02);
-            position: relative;
+            gap: 20px;
+            background: #1c1c2e;
+            border: 3px solid #2e2e4a;
+            border-radius: 24px;
+            padding: 18px 28px;
+            box-shadow: var(--shadow), inset 0 1px 0 rgba(255,255,255,0.03);
+            flex-wrap: nowrap;
+            justify-content: center;
         }
-        .traffic-light::before,
-        .traffic-light::after {
-            content: '';
-            position: absolute;
-            top: -10px;
-            width: 24px;
-            height: 12px;
-            background: #2e2e4a;
-            border-radius: 6px 6px 0 0;
-        }
-        .traffic-light::before { left: 30px; }
-        .traffic-light::after { right: 30px; }
-
-        /* Лампы */
-        .light {
-            width: 85px;
-            height: 85px;
+        .f1-light {
+            width: 75px;
+            height: 75px;
             border-radius: 50%;
             background: #0a0a18;
             border: 3px solid #2a2a44;
             position: relative;
             transition: all 0.25s cubic-bezier(0.4,0,0.2,1);
             box-shadow: inset 0 3px 12px rgba(0,0,0,0.8), 0 3px 10px rgba(0,0,0,0.6);
-            cursor: default;
         }
-        .light::after {
+        .f1-light::after {
             content: '';
             position: absolute;
             top: 10px;
             left: 14px;
-            width: 22px;
-            height: 14px;
+            width: 20px;
+            height: 12px;
             background: rgba(255,255,255,0.03);
             border-radius: 50%;
             transform: rotate(-30deg);
-            transition: all 0.25s;
         }
 
-        /* Активные состояния */
-        .light.red.active {
+        .f1-light.red.active {
             background: radial-gradient(ellipse at 40% 35%, #ff5c5c, var(--red-on) 50%, #8b0000 100%);
             border-color: #ff4444;
-            box-shadow: inset 0 0 25px rgba(255,100,100,0.6), 0 0 35px var(--red-glow), 0 0 70px rgba(255,0,0,0.5), 0 4px 15px rgba(0,0,0,0.5);
+            box-shadow: inset 0 0 25px rgba(255,100,100,0.6), 0 0 35px var(--red-glow), 0 0 70px rgba(255,0,0,0.5);
             animation: glow-red 0.8s ease-in-out infinite;
         }
-        .light.red.active::after {
-            background: rgba(255,255,255,0.2);
-            width: 26px;
-            height: 16px;
-            top: 8px;
-            left: 12px;
-        }
         @keyframes glow-red {
-            0%,100% { box-shadow: inset 0 0 25px rgba(255,100,100,0.6), 0 0 35px var(--red-glow), 0 0 70px rgba(255,0,0,0.5), 0 4px 15px rgba(0,0,0,0.5); }
-            50% { box-shadow: inset 0 0 35px rgba(255,140,140,0.8), 0 0 55px var(--red-glow), 0 0 100px rgba(255,0,0,0.7), 0 4px 15px rgba(0,0,0,0.5); }
+            0%,100% { box-shadow: inset 0 0 25px rgba(255,100,100,0.6), 0 0 35px var(--red-glow), 0 0 70px rgba(255,0,0,0.5); }
+            50% { box-shadow: inset 0 0 35px rgba(255,140,140,0.8), 0 0 55px var(--red-glow), 0 0 100px rgba(255,0,0,0.7); }
         }
 
-        .light.yellow.active {
+        .f1-light.yellow.active {
             background: radial-gradient(ellipse at 40% 35%, #ffe680, var(--yellow-on) 50%, #996600 100%);
             border-color: #ffbb33;
-            box-shadow: inset 0 0 25px rgba(255,200,50,0.6), 0 0 35px var(--yellow-glow), 0 0 70px rgba(255,170,0,0.5), 0 4px 15px rgba(0,0,0,0.5);
+            box-shadow: inset 0 0 25px rgba(255,200,50,0.6), 0 0 35px var(--yellow-glow), 0 0 70px rgba(255,170,0,0.5);
             animation: glow-yellow 0.7s ease-in-out infinite;
         }
-        .light.yellow.active::after {
-            background: rgba(255,255,255,0.25);
-            width: 26px;
-            height: 16px;
-            top: 8px;
-            left: 12px;
-        }
         @keyframes glow-yellow {
-            0%,100% { box-shadow: inset 0 0 25px rgba(255,200,50,0.6), 0 0 35px var(--yellow-glow), 0 0 70px rgba(255,170,0,0.5), 0 4px 15px rgba(0,0,0,0.5); }
-            50% { box-shadow: inset 0 0 35px rgba(255,230,80,0.8), 0 0 55px var(--yellow-glow), 0 0 100px rgba(255,170,0,0.7), 0 4px 15px rgba(0,0,0,0.5); }
+            0%,100% { box-shadow: inset 0 0 25px rgba(255,200,50,0.6), 0 0 35px var(--yellow-glow), 0 0 70px rgba(255,170,0,0.5); }
+            50% { box-shadow: inset 0 0 35px rgba(255,230,80,0.8), 0 0 55px var(--yellow-glow), 0 0 100px rgba(255,170,0,0.7); }
         }
 
-        .light.green.active {
+        .f1-light.green.active {
             background: radial-gradient(ellipse at 40% 35%, #7fff7f, var(--green-on) 50%, #006600 100%);
             border-color: #33ff55;
-            box-shadow: inset 0 0 25px rgba(100,255,100,0.6), 0 0 35px var(--green-glow), 0 0 70px rgba(0,255,0,0.5), 0 4px 15px rgba(0,0,0,0.5);
+            box-shadow: inset 0 0 25px rgba(100,255,100,0.6), 0 0 35px var(--green-glow), 0 0 70px rgba(0,255,0,0.5);
             animation: glow-green 0.5s ease-in-out infinite;
         }
-        .light.green.active::after {
-            background: rgba(255,255,255,0.3);
-            width: 26px;
-            height: 16px;
-            top: 8px;
-            left: 12px;
-        }
         @keyframes glow-green {
-            0%,100% { box-shadow: inset 0 0 25px rgba(100,255,100,0.6), 0 0 35px var(--green-glow), 0 0 70px rgba(0,255,0,0.5), 0 4px 15px rgba(0,0,0,0.5); }
-            50% { box-shadow: inset 0 0 35px rgba(160,255,160,0.9), 0 0 60px var(--green-glow), 0 0 110px rgba(0,255,0,0.8), 0 4px 15px rgba(0,0,0,0.5); }
+            0%,100% { box-shadow: inset 0 0 25px rgba(100,255,100,0.6), 0 0 35px var(--green-glow), 0 0 70px rgba(0,255,0,0.5); }
+            50% { box-shadow: inset 0 0 35px rgba(160,255,160,0.9), 0 0 60px var(--green-glow), 0 0 100px rgba(0,255,0,0.7); }
         }
 
-        /* Статус */
         .status {
-            font-size: 1rem;
+            font-size: 1.2rem;
             font-weight: 600;
             color: var(--text-secondary);
             text-align: center;
-            min-height: 28px;
+            min-height: 32px;
             letter-spacing: 1px;
             transition: color 0.2s;
         }
         .status.go {
             color: #00ff41;
-            font-size: 1.4rem;
+            font-size: 1.8rem;
             font-weight: 800;
-            letter-spacing: 3px;
             animation: blink-status 0.35s ease-in-out 3;
         }
         @keyframes blink-status {
@@ -204,14 +185,13 @@
         .status.ready { color: #ff6666; }
         .status.set { color: #ffcc44; }
 
-        /* Обратный отсчёт */
         .countdown-display {
-            font-size: 1.4rem;
+            font-size: 1.8rem;
             font-weight: 800;
             text-align: center;
             color: #ffffff;
             letter-spacing: 2px;
-            min-height: 36px;
+            min-height: 42px;
             transition: all 0.2s;
         }
         .countdown-display.warning {
@@ -220,35 +200,93 @@
         }
         .countdown-display.go {
             color: #00ff41;
-            font-size: 2rem;
+            font-size: 2.4rem;
             animation: pulse-text 0.3s ease-in-out 4;
         }
         @keyframes pulse-text {
             0%,100% { transform: scale(1); }
-            50% { transform: scale(1.1); }
+            50% { transform: scale(1.15); }
         }
 
-        /* Панель параметров */
-        .panel {
+        .action-button {
+            width: 100%;
+            padding: 24px 28px;
+            border-radius: 24px;
+            border: none;
+            font-size: 2.2rem;
+            font-weight: 800;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4,0,0.2,1);
+            font-family: inherit;
+            box-shadow: 0 10px 30px rgba(233,68,96,0.5);
+            text-shadow: 0 2px 6px rgba(0,0,0,0.3);
+            min-height: 80px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .action-button.start { background: var(--accent); color: #fff; }
+        .action-button.cancel {
+            background: #ffaa00;
+            color: #000;
+            box-shadow: 0 10px 30px rgba(255,170,0,0.5);
+        }
+        .action-button:active { transform: scale(0.97); transition: transform 0.1s; }
+
+        .modal-overlay {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: rgba(0,0,0,0.7);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 200;
+            visibility: hidden;
+            opacity: 0;
+            transition: all 0.3s;
+        }
+        .modal-overlay.active { visibility: visible; opacity: 1; }
+
+        .modal {
             background: var(--panel-bg);
             border: 2px solid #2a2a4a;
-            border-radius: 16px;
-            padding: 18px 20px;
-            width: 100%;
-            box-shadow: var(--shadow);
+            border-radius: 20px;
+            padding: 24px 20px;
+            width: 90%;
+            max-width: 400px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.8);
             display: flex;
             flex-direction: column;
-            gap: 12px;
+            gap: 16px;
         }
-        .panel-title {
-            font-size: 0.8rem;
-            font-weight: 700;
-            color: var(--text-secondary);
-            text-transform: uppercase;
-            letter-spacing: 1.5px;
-            text-align: center;
-            margin-bottom: 2px;
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
+        .modal-header h3 {
+            font-size: 1.2rem;
+            color: #fff;
+            letter-spacing: 1px;
+        }
+        .close-modal {
+            width: 40px; height: 40px;
+            border-radius: 50%;
+            background: #1a1a2e;
+            border: 2px solid #2a2a4a;
+            color: #c0c0d0;
+            font-size: 1.5rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+        }
+        .close-modal:hover { background: #2a2a44; color: #fff; }
+
         .param-row {
             display: flex;
             align-items: center;
@@ -257,16 +295,37 @@
             flex-wrap: wrap;
         }
         .param-row label {
-            font-size: 0.85rem;
+            font-size: 0.9rem;
             font-weight: 500;
             color: #c0c0d0;
-            white-space: nowrap;
-            min-width: 90px;
+            min-width: 100px;
         }
-        .param-row input[type="number"] {
+        .number-input-group {
+            display: flex;
+            align-items: center;
+            gap: 6px;
             flex: 1;
-            min-width: 70px;
-            padding: 8px 12px;
+            min-width: 140px;
+        }
+        .number-input-group button {
+            width: 38px; height: 38px;
+            border-radius: 8px;
+            border: 2px solid var(--input-border);
+            background: var(--input-bg);
+            color: #ffffff;
+            font-size: 1.3rem;
+            font-weight: 700;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+        }
+        .number-input-group button:active { background: #2a2a44; transform: scale(0.95); }
+        .number-input-group input {
+            flex: 1;
+            min-width: 60px;
+            padding: 8px;
             border-radius: 8px;
             border: 2px solid var(--input-border);
             background: var(--input-bg);
@@ -274,12 +333,10 @@
             font-size: 0.9rem;
             font-weight: 600;
             text-align: center;
-            transition: all 0.25s;
             outline: none;
             font-family: inherit;
-            letter-spacing: 0.5px;
         }
-        .param-row input:focus {
+        .number-input-group input:focus {
             border-color: var(--accent);
             box-shadow: 0 0 0 4px rgba(233,68,96,0.15);
             background: #1e1e38;
@@ -290,15 +347,12 @@
             min-width: 28px;
             text-align: left;
         }
-
-        /* Чекбокс */
         .checkbox-row {
             justify-content: flex-start;
             gap: 12px;
         }
         .checkbox-row input[type="checkbox"] {
-            width: 20px;
-            height: 20px;
+            width: 20px; height: 20px;
             accent-color: var(--accent);
             transform: scale(1.1);
             cursor: pointer;
@@ -310,231 +364,199 @@
             color: #d0d0e0;
         }
 
-        /* Кнопки */
-        .button-row {
-            display: flex;
-            gap: 10px;
-            width: 100%;
-            flex-wrap: wrap;
-            margin-top: 4px;
-        }
-        .btn {
-            flex: 1;
-            min-width: 110px;
-            padding: 14px 22px;
-            border-radius: 14px;
-            border: none;
-            font-size: 1rem;
-            font-weight: 700;
-            letter-spacing: 1.2px;
-            text-transform: uppercase;
-            cursor: pointer;
-            transition: all 0.3s cubic-bezier(0.4,0,0.2,1);
-            font-family: inherit;
-            position: relative;
-            overflow: hidden;
-        }
-        .btn:active {
-            transform: scale(0.96);
-            transition: transform 0.1s;
-        }
-        /* Увеличенная кнопка СТАРТ */
-        .btn-start {
-            background: var(--accent);
-            color: #fff;
-            box-shadow: 0 8px 24px rgba(233,68,96,0.5);
-            font-size: 1.4rem;
-            font-weight: 800;
-            letter-spacing: 2px;
-            padding: 18px 28px;
-            border-radius: 16px;
-            min-width: 160px;
-            text-shadow: 0 1px 2px rgba(0,0,0,0.3);
-        }
-        .btn-start:hover:not(:disabled) {
-            background: var(--accent-hover);
-            box-shadow: 0 10px 32px rgba(233,68,96,0.7);
-            transform: translateY(-3px);
-        }
-        .btn-start:disabled {
-            background: #444;
-            color: #888;
-            cursor: not-allowed;
-            box-shadow: none;
-            text-shadow: none;
-        }
-        .btn-reset {
-            background: transparent;
-            color: #c0c0d0;
-            border: 2px solid #3a3a55;
-            font-size: 1rem;
-            padding: 14px 22px;
-        }
-        .btn-reset:hover:not(:disabled) {
-            background: rgba(255,255,255,0.05);
-            border-color: #5a5a7a;
-            color: #fff;
-            transform: translateY(-2px);
-        }
-        .btn-reset:disabled {
-            opacity: 0.4;
-            cursor: not-allowed;
-        }
-
-        /* Адаптация для очень маленьких экранов */
         @media (max-width: 480px) {
-            .container {
-                gap: 15px;
-                max-width: 100%;
-            }
-            .light {
-                width: 70px;
-                height: 70px;
-            }
-            .traffic-light {
-                padding: 12px 10px;
-                gap: 8px;
-                border-radius: 18px;
-            }
-            .traffic-light::before,
-            .traffic-light::after {
-                width: 20px;
-                height: 10px;
-                top: -8px;
-            }
-            .traffic-light::before { left: 22px; }
-            .traffic-light::after { right: 22px; }
-            .title {
-                font-size: 1.3rem;
-                letter-spacing: 1px;
-            }
-            .panel {
-                padding: 14px 12px;
-                gap: 8px;
-            }
-            .param-row label {
-                font-size: 0.75rem;
-                min-width: 70px;
-            }
-            .param-row input[type="number"] {
-                padding: 6px 8px;
-                font-size: 0.8rem;
-            }
-            .btn-start {
-                font-size: 1.2rem;
-                padding: 15px 20px;
-                min-width: 130px;
-            }
-            .btn-reset {
-                font-size: 0.9rem;
-                padding: 12px 16px;
-            }
+            .f1-light { width: 60px; height: 60px; }
+            .f1-lights { gap: 12px; padding: 12px 18px; border-radius: 20px; }
+            .title { font-size: 1.4rem; }
+            .action-button { font-size: 1.8rem; padding: 18px 20px; }
+            .modal { padding: 18px 14px; }
+            .number-input-group button { width: 32px; height: 32px; font-size: 1.1rem; }
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <div class="title">
-            <span class="icon">🏁</span> Стартовый сигнал
-        </div>
+    <div class="settings-btn" id="settingsBtn">⚙️</div>
 
-        <!-- Светофор -->
-        <div class="traffic-light" id="trafficLight">
-            <div class="light red" id="lightRed"></div>
-            <div class="light yellow" id="lightYellow"></div>
-            <div class="light green" id="lightGreen"></div>
-        </div>
-
-        <div class="status" id="statusText">Нажмите «СТАРТ»</div>
-        <div class="countdown-display" id="countdownDisplay"></div>
-
-        <!-- Панель параметров -->
-        <div class="panel">
-            <div class="panel-title">⚙️ Параметры случайной задержки</div>
+    <div class="modal-overlay" id="modalOverlay">
+        <div class="modal">
+            <div class="modal-header">
+                <h3>⚙️ Настройки</h3>
+                <div class="close-modal" id="closeModal">✕</div>
+            </div>
             <div class="param-row">
-                <label for="minDelay">Мин. задержка:</label>
-                <input type="number" id="minDelay" value="1.5" min="0.1" max="30" step="0.1" placeholder="1.5">
+                <label>Мин. задержка:</label>
+                <div class="number-input-group">
+                    <button id="minDec">–</button>
+                    <input type="number" id="minDelay" value="1.5" min="0.5" max="30" step="0.5">
+                    <button id="minInc">+</button>
+                </div>
                 <span class="param-unit">сек</span>
             </div>
             <div class="param-row">
-                <label for="maxDelay">Макс. задержка:</label>
-                <input type="number" id="maxDelay" value="5.0" min="0.2" max="30" step="0.1" placeholder="5.0">
-                <span class="param-unit">сек</span>
-            </div>
-            <div class="param-row">
-                <label for="fixedDelay">Фикс. пауза (🔴→🟡):</label>
-                <input type="number" id="fixedDelay" value="1.2" min="0.1" max="10" step="0.1" placeholder="1.2">
+                <label>Макс. задержка:</label>
+                <div class="number-input-group">
+                    <button id="maxDec">–</button>
+                    <input type="number" id="maxDelay" value="3.0" min="0.5" max="30" step="0.5">
+                    <button id="maxInc">+</button>
+                </div>
                 <span class="param-unit">сек</span>
             </div>
             <div class="param-row checkbox-row">
                 <label for="wakeLockCheck">Блокировка экрана</label>
                 <input type="checkbox" id="wakeLockCheck">
             </div>
-            <div class="button-row">
-                <button class="btn btn-start" id="btnStart">🚦 Старт</button>
-                <button class="btn btn-reset" id="btnReset">↺ Сброс</button>
-            </div>
         </div>
+    </div>
+
+    <div class="container">
+        <div class="title">
+            <span class="icon">🛸</span> СТАРТ ГОНКИ
+        </div>
+        <div class="f1-lights" id="f1Lights">
+            <div class="f1-light red" id="lightRed"></div>
+            <div class="f1-light yellow" id="lightYellow"></div>
+            <div class="f1-light green" id="lightGreen"></div>
+        </div>
+        <div class="status" id="statusText">Готовность</div>
+        <div class="countdown-display" id="countdownDisplay"></div>
+        <button class="action-button start" id="actionButton">🚀 СТАРТ</button>
     </div>
 
     <script>
         (function() {
+            // DOM элементы
             const lightRed = document.getElementById('lightRed');
             const lightYellow = document.getElementById('lightYellow');
             const lightGreen = document.getElementById('lightGreen');
             const statusText = document.getElementById('statusText');
             const countdownDisplay = document.getElementById('countdownDisplay');
-            const btnStart = document.getElementById('btnStart');
-            const btnReset = document.getElementById('btnReset');
+            const actionButton = document.getElementById('actionButton');
+            const settingsBtn = document.getElementById('settingsBtn');
+            const modalOverlay = document.getElementById('modalOverlay');
+            const closeModal = document.getElementById('closeModal');
             const inputMinDelay = document.getElementById('minDelay');
             const inputMaxDelay = document.getElementById('maxDelay');
-            const inputFixedDelay = document.getElementById('fixedDelay');
+            const minDec = document.getElementById('minDec');
+            const minInc = document.getElementById('minInc');
+            const maxDec = document.getElementById('maxDec');
+            const maxInc = document.getElementById('maxInc');
             const wakeLockCheck = document.getElementById('wakeLockCheck');
 
-            let isRunning = false;
-            let timers = [];
-            let countdownInterval = null;
-            let countdownTarget = 0;
+            // Ключи для localStorage
+            const STORAGE_KEY_MIN = 'droneStartMinDelay';
+            const STORAGE_KEY_MAX = 'droneStartMaxDelay';
+            const STORAGE_KEY_WAKELOCK = 'droneStartWakeLock';
 
-            // === Wake Lock управление ===
+            // === Загрузка и сохранение настроек ===
+            function loadSettings() {
+                const savedMin = localStorage.getItem(STORAGE_KEY_MIN);
+                const savedMax = localStorage.getItem(STORAGE_KEY_MAX);
+                const savedWakeLock = localStorage.getItem(STORAGE_KEY_WAKELOCK);
+
+                if (savedMin !== null) {
+                    let val = parseFloat(savedMin);
+                    if (!isNaN(val)) {
+                        val = clampAndRound(val, 0.5, 30);
+                        inputMinDelay.value = val.toFixed(1);
+                    }
+                }
+                if (savedMax !== null) {
+                    let val = parseFloat(savedMax);
+                    if (!isNaN(val)) {
+                        val = clampAndRound(val, 0.5, 30);
+                        inputMaxDelay.value = val.toFixed(1);
+                    }
+                }
+                if (savedWakeLock !== null) {
+                    wakeLockCheck.checked = savedWakeLock === 'true';
+                }
+            }
+
+            function clampAndRound(value, min, max) {
+                let clamped = Math.min(max, Math.max(min, value));
+                return Math.round(clamped * 2) / 2;
+            }
+
+            function formatAndSet(input, value) {
+                const min = parseFloat(input.min);
+                const max = parseFloat(input.max);
+                const formatted = clampAndRound(value, min, max);
+                input.value = formatted.toFixed(1);
+            }
+
+            function saveSettings() {
+                localStorage.setItem(STORAGE_KEY_MIN, inputMinDelay.value);
+                localStorage.setItem(STORAGE_KEY_MAX, inputMaxDelay.value);
+                localStorage.setItem(STORAGE_KEY_WAKELOCK, wakeLockCheck.checked);
+            }
+
+            // === PWA манифест ===
+            const canvas = document.createElement('canvas');
+            canvas.width = 192; canvas.height = 192;
+            const ctx = canvas.getContext('2d');
+            ctx.fillStyle = '#0a0f1e';
+            ctx.beginPath(); ctx.arc(96, 96, 90, 0, Math.PI*2); ctx.fill();
+            ctx.fillStyle = '#ff1a1a';
+            ctx.shadowColor = '#ff0000'; ctx.shadowBlur = 20;
+            ctx.beginPath(); ctx.arc(50, 96, 16, 0, Math.PI*2); ctx.fill();
+            ctx.fillStyle = '#ffcc00';
+            ctx.shadowColor = '#ffaa00';
+            ctx.beginPath(); ctx.arc(96, 96, 16, 0, Math.PI*2); ctx.fill();
+            ctx.fillStyle = '#00ff41';
+            ctx.shadowColor = '#00ff00';
+            ctx.beginPath(); ctx.arc(142, 96, 16, 0, Math.PI*2); ctx.fill();
+            ctx.shadowColor = 'transparent'; ctx.shadowBlur = 0;
+            const iconUrl = canvas.toDataURL('image/png');
+            const manifest = {
+                name: "Старт Гонки",
+                short_name: "TheTrigger",
+                start_url: location.href,
+                display: "standalone",
+                background_color: "#0a0f1e",
+                theme_color: "#0a0f1e",
+                icons: [{ src: iconUrl, sizes: "192x192", type: "image/png" }]
+            };
+            const blob = new Blob([JSON.stringify(manifest)], { type: 'application/json' });
+            const link = document.createElement('link');
+            link.rel = 'manifest';
+            link.href = URL.createObjectURL(blob);
+            document.head.appendChild(link);
+
+            // === Модальное окно ===
+            settingsBtn.addEventListener('click', () => modalOverlay.classList.add('active'));
+            closeModal.addEventListener('click', () => modalOverlay.classList.remove('active'));
+            modalOverlay.addEventListener('click', (e) => {
+                if (e.target === modalOverlay) modalOverlay.classList.remove('active');
+            });
+
+            // === Wake Lock ===
             let wakeLock = null;
             const wakeLockSupported = 'wakeLock' in navigator;
-
             if (!wakeLockSupported) {
                 wakeLockCheck.disabled = true;
                 wakeLockCheck.parentElement.style.opacity = '0.5';
-                wakeLockCheck.title = 'API блокировки экрана не поддерживается вашим браузером';
-                console.warn('Wake Lock API не поддерживается.');
             }
-
             async function requestWakeLock() {
                 if (!wakeLockSupported || !wakeLockCheck.checked) return;
                 try {
                     wakeLock = await navigator.wakeLock.request('screen');
-                    console.log('Wake Lock активирован');
                     wakeLock.addEventListener('release', () => {
-                        console.log('Wake Lock освобождён системой');
                         wakeLock = null;
-                        if (wakeLockCheck.checked) {
-                            // Попытаемся восстановить, если чекбокс всё ещё включён
-                            requestWakeLock();
-                        }
+                        if (wakeLockCheck.checked) requestWakeLock();
                     });
                 } catch (err) {
-                    console.warn('Ошибка запроса Wake Lock:', err);
                     wakeLockCheck.checked = false;
+                    saveSettings();
                 }
             }
-
             async function releaseWakeLock() {
                 if (wakeLock) {
                     await wakeLock.release();
                     wakeLock = null;
-                    console.log('Wake Lock отпущен вручную');
                 }
             }
-
             wakeLockCheck.addEventListener('change', () => {
+                saveSettings();
                 if (wakeLockCheck.checked) {
                     requestWakeLock();
                 } else {
@@ -542,52 +564,67 @@
                 }
             });
 
-            // === Звуковой движок ===
+            // === Звук ===
             let audioCtx = null;
-
             function getAudioContext() {
-                if (!audioCtx) {
-                    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-                }
-                if (audioCtx.state === 'suspended') {
-                    audioCtx.resume();
-                }
+                if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                if (audioCtx.state === 'suspended') audioCtx.resume();
                 return audioCtx;
             }
-
-            function playBeep(frequency, duration, type = 'square', volume = 0.35) {
+            function playBeep(frequency, duration, type = 'square', volume = 0.3) {
                 try {
                     const ctx = getAudioContext();
                     const now = ctx.currentTime;
-                    const oscillator = ctx.createOscillator();
-                    const gainNode = ctx.createGain();
-
-                    oscillator.type = type;
-                    oscillator.frequency.setValueAtTime(frequency, now);
-
-                    const attackTime = 0.01;
-                    const releaseTime = Math.min(0.06, duration * 0.2);
-                    gainNode.gain.setValueAtTime(0, now);
-                    gainNode.gain.linearRampToValueAtTime(volume, now + attackTime);
-                    gainNode.gain.setValueAtTime(volume, now + duration - releaseTime);
-                    gainNode.gain.linearRampToValueAtTime(0, now + duration);
-
-                    oscillator.connect(gainNode);
-                    gainNode.connect(ctx.destination);
-
-                    oscillator.start(now);
-                    oscillator.stop(now + duration);
-
-                    oscillator.onended = () => {
-                        oscillator.disconnect();
-                        gainNode.disconnect();
-                    };
-                } catch (e) {
-                    console.warn('Звук не воспроизведён:', e.message);
-                }
+                    const osc = ctx.createOscillator();
+                    const gain = ctx.createGain();
+                    osc.type = type;
+                    osc.frequency.setValueAtTime(frequency, now);
+                    const attack = 0.01;
+                    const release = Math.min(0.06, duration * 0.2);
+                    gain.gain.setValueAtTime(0, now);
+                    gain.gain.linearRampToValueAtTime(volume, now + attack);
+                    gain.gain.setValueAtTime(volume, now + duration - release);
+                    gain.gain.linearRampToValueAtTime(0, now + duration);
+                    osc.connect(gain); gain.connect(ctx.destination);
+                    osc.start(now); osc.stop(now + duration);
+                    osc.onended = () => { osc.disconnect(); gain.disconnect(); };
+                } catch (e) {}
             }
 
-            // === Логика светофора ===
+            // === Логика кнопок +/- и ручного ввода ===
+            function adjustValue(input, delta) {
+                let val = parseFloat(input.value) || 0;
+                val += delta;
+                formatAndSet(input, val);
+                saveSettings();
+            }
+
+            function handleManualInput(input) {
+                let val = parseFloat(input.value);
+                if (isNaN(val)) return;
+                formatAndSet(input, val);
+                saveSettings();
+            }
+
+            minDec.addEventListener('click', () => adjustValue(inputMinDelay, -0.5));
+            minInc.addEventListener('click', () => adjustValue(inputMinDelay, 0.5));
+            maxDec.addEventListener('click', () => adjustValue(inputMaxDelay, -0.5));
+            maxInc.addEventListener('click', () => adjustValue(inputMaxDelay, 0.5));
+
+            inputMinDelay.addEventListener('blur', () => handleManualInput(inputMinDelay));
+            inputMaxDelay.addEventListener('blur', () => handleManualInput(inputMaxDelay));
+            inputMinDelay.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') handleManualInput(inputMinDelay);
+            });
+            inputMaxDelay.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') handleManualInput(inputMaxDelay);
+            });
+
+            // === Управление светофором ===
+            let isRunning = false;
+            let timers = [];
+            let countdownInterval = null;
+
             function clearAllTimers() {
                 timers.forEach(id => clearTimeout(id));
                 timers = [];
@@ -597,67 +634,33 @@
                 }
             }
 
-            function resetLights() {
+            function resetUI() {
                 lightRed.classList.remove('active');
                 lightYellow.classList.remove('active');
                 lightGreen.classList.remove('active');
-                statusText.textContent = 'Нажмите «СТАРТ»';
+                statusText.textContent = 'Готовность';
                 statusText.className = 'status';
                 countdownDisplay.textContent = '';
                 countdownDisplay.className = 'countdown-display';
                 isRunning = false;
-                btnStart.disabled = false;
-                btnReset.disabled = false;
-                // Не отпускаем Wake Lock, так как он управляется чекбоксом отдельно
+                actionButton.textContent = '🚀 СТАРТ';
+                actionButton.className = 'action-button start';
             }
 
-            function getParams() {
-                const minDelay = parseFloat(inputMinDelay.value);
-                const maxDelay = parseFloat(inputMaxDelay.value);
-                const fixedDelay = parseFloat(inputFixedDelay.value);
-
-                if (isNaN(minDelay) || isNaN(maxDelay) || isNaN(fixedDelay)) {
-                    alert('Заполните все поля числовыми значениями.');
-                    return null;
-                }
-                if (minDelay < 0 || maxDelay < 0 || fixedDelay < 0) {
-                    alert('Значения задержек не могут быть отрицательными.');
-                    return null;
-                }
-                if (minDelay > maxDelay) {
-                    alert('Минимальная задержка не может быть больше максимальной.');
-                    return null;
-                }
-                if (fixedDelay < 0.05) {
-                    alert('Фиксированная пауза должна быть не менее 0.05 сек.');
-                    return null;
-                }
-                if (maxDelay > 30) {
-                    alert('Максимальная задержка не должна превышать 30 секунд.');
-                    return null;
-                }
-                return {
-                    minDelay: Math.max(0.05, minDelay),
-                    maxDelay: Math.min(30, maxDelay),
-                    fixedDelay: Math.max(0.05, Math.min(10, fixedDelay)),
-                };
+            function abortSequence() {
+                clearAllTimers();
+                resetUI();
             }
 
             function getRandomDelay(min, max) {
-                const seconds = min + Math.random() * (max - min);
-                return Math.round(seconds * 1000);
+                return Math.round((min + Math.random() * (max - min)) * 1000);
             }
 
-            function startCountdown(totalMs, phase) {
-                countdownTarget = totalMs;
+            function startCountdown(totalMs) {
                 const startTime = Date.now();
-
                 if (countdownInterval) clearInterval(countdownInterval);
-
                 countdownInterval = setInterval(() => {
-                    const elapsed = Date.now() - startTime;
-                    const remaining = countdownTarget - elapsed;
-
+                    const remaining = totalMs - (Date.now() - startTime);
                     if (remaining <= 0) {
                         countdownDisplay.textContent = '';
                         countdownDisplay.className = 'countdown-display';
@@ -665,122 +668,84 @@
                         countdownInterval = null;
                         return;
                     }
-
-                    const seconds = (remaining / 1000).toFixed(1);
-                    countdownDisplay.textContent = seconds + 'с';
-
-                    if (phase === 'random' && remaining < 1000) {
-                        countdownDisplay.className = 'countdown-display warning';
-                    } else if (phase === 'fixed') {
-                        countdownDisplay.className = 'countdown-display';
-                    }
+                    countdownDisplay.textContent = (remaining / 1000).toFixed(1) + 'с';
+                    countdownDisplay.className = remaining < 1000 ? 'countdown-display warning' : 'countdown-display';
                 }, 100);
             }
 
             function startSequence() {
                 if (isRunning) return;
-
-                const params = getParams();
-                if (!params) return;
+                const min = parseFloat(inputMinDelay.value);
+                const max = parseFloat(inputMaxDelay.value);
+                if (isNaN(min) || isNaN(max)) return;
+                if (min > max) {
+                    alert('Минимальная задержка не может быть больше максимальной.');
+                    return;
+                }
 
                 clearAllTimers();
-                resetLights();
+                resetUI();
                 isRunning = true;
-                btnStart.disabled = true;
-                btnReset.disabled = false;
+                actionButton.textContent = '⛔ ОТМЕНА';
+                actionButton.className = 'action-button cancel';
 
-                const { minDelay, maxDelay, fixedDelay } = params;
-                const fixedDelayMs = Math.round(fixedDelay * 1000);
-                const randomDelayMs = getRandomDelay(minDelay, maxDelay);
+                // Интервал между красным и жёлтым теперь равен минимальной задержке
+                const fixedDelayMs = Math.round(min * 1000);
+                const randomDelay = getRandomDelay(min, max);
 
-                // 🔴 Красный сигнал
                 lightRed.classList.add('active');
-                statusText.textContent = 'ПРИГОТОВИТЬСЯ!';
+                statusText.textContent = 'ПРИГОТОВИТЬСЯ';
                 statusText.className = 'status ready';
                 playBeep(440, 0.2, 'square', 0.3);
 
-                startCountdown(fixedDelayMs, 'fixed');
-
-                const timer1 = setTimeout(() => {
-                    // 🟡 Жёлтый сигнал
+                const timerYellow = setTimeout(() => {
                     lightYellow.classList.add('active');
-                    statusText.textContent = 'ВНИМАНИЕ!';
+                    statusText.textContent = 'ВНИМАНИЕ';
                     statusText.className = 'status set';
                     playBeep(660, 0.15, 'square', 0.35);
+                    startCountdown(randomDelay);
 
-                    if (countdownInterval) {
-                        clearInterval(countdownInterval);
-                        countdownInterval = null;
-                    }
-                    countdownDisplay.textContent = '';
-                    countdownDisplay.className = 'countdown-display';
-                    startCountdown(randomDelayMs, 'random');
-
-                    const timer2 = setTimeout(() => {
-                        // 🟢 Зелёный сигнал
+                    const timerGreen = setTimeout(() => {
+                        lightRed.classList.remove('active');
+                        lightYellow.classList.remove('active');
                         lightGreen.classList.add('active');
-                        statusText.textContent = 'СТАРТ! ПОЕХАЛИ!';
+                        statusText.textContent = 'СТАРТ!';
                         statusText.className = 'status go';
                         countdownDisplay.textContent = 'GO!';
                         countdownDisplay.className = 'countdown-display go';
-                        playBeep(880, 0.45, 'square', 0.4);
+                        playBeep(880, 0.5, 'square', 0.45);
 
-                        const timer3 = setTimeout(() => {
-                            resetLights();
+                        const timerReset = setTimeout(() => {
+                            if (isRunning) abortSequence();
                         }, 3000);
-                        timers.push(timer3);
-
-                    }, randomDelayMs);
-                    timers.push(timer2);
-
+                        timers.push(timerReset);
+                    }, randomDelay);
+                    timers.push(timerGreen);
                 }, fixedDelayMs);
-                timers.push(timer1);
-
-                console.log(
-                    `🏁 Старт:\n` +
-                    `   🔴 Красный — немедленно\n` +
-                    `   🟡 Жёлтый — через ${fixedDelay.toFixed(1)} сек\n` +
-                    `   🟢 Зелёный — через случайные ${(randomDelayMs / 1000).toFixed(1)} сек ` +
-                    `(диапазон: ${minDelay.toFixed(1)}–${maxDelay.toFixed(1)} сек)`
-                );
+                timers.push(timerYellow);
             }
 
-            function resetSequence() {
-                clearAllTimers();
-                resetLights();
-                console.log('🔄 Сброс выполнен.');
-            }
-
-            btnStart.addEventListener('click', startSequence);
-            btnReset.addEventListener('click', resetSequence);
+            actionButton.addEventListener('click', () => {
+                if (isRunning) {
+                    abortSequence();
+                } else {
+                    startSequence();
+                }
+            });
 
             document.addEventListener('keydown', (e) => {
                 if (e.key === ' ' || e.code === 'Space') {
                     e.preventDefault();
                     if (!isRunning) startSequence();
-                } else if (e.key === 'r' || e.key === 'R' || e.key === 'Escape') {
+                } else if (e.key === 'Escape') {
                     e.preventDefault();
-                    resetSequence();
+                    if (isRunning) abortSequence();
                 }
             });
 
-            [inputMinDelay, inputMaxDelay, inputFixedDelay].forEach(input => {
-                input.addEventListener('input', () => {
-                    const val = parseFloat(input.value);
-                    if (!isNaN(val) && val < 0) input.value = '0.1';
-                });
-                input.addEventListener('blur', () => {
-                    const val = parseFloat(input.value);
-                    if (isNaN(val) || val < 0) input.value = input.dataset.defaultValue || '1.0';
-                    if (!isNaN(parseFloat(input.value))) {
-                        input.value = parseFloat(input.value).toFixed(1);
-                    }
-                });
-                input.dataset.defaultValue = input.value;
-            });
-
-            resetLights();
-            console.log('🏁 Готово! Пробел — старт, Esc/R — сброс.');
+            // === Инициализация ===
+            loadSettings();
+            resetUI();
         })();
     </script>
 </body>
